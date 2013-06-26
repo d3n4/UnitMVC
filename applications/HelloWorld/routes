@@ -1,0 +1,4 @@
+GET / application.index
+
+# Hello World!
+* /id([0-9]+) application.profile

@@ -1,0 +1,4 @@
+AddDefaultCharset utf-8
+
+RewriteEngine on
+RewriteRule ^(.*)$ index.php?uri=$1 [L,QSA]
