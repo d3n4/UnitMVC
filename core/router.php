@@ -12,32 +12,66 @@
          * Initialize router
          */
         public static function initialize(){
-            /*
-            global $conf;
-            if($conf->read("router", "auto", 1) == 1){
-                return self::generate();
-            }
-            else
-            */
-            if(file_exists(APP_ROUTES)){
+            $conf = Config::Get("config.ini");
+            if($conf->read("router", "auto", 1) == 1)
+                self::generate();
+            else if(file_exists(APP_ROUTES)){
                 $routes = file_get_contents(APP_ROUTES);
                 foreach((array)explode("\n", str_replace("\r", "", $routes)) as $route){
+                    if(strlen($route)>0)
+                        if($route[0] == "#")
+                            continue;
                     $route_raw = explode(" ", $route);
-                    if(sizeof($route_raw)===3){
-                        $index = (strlen($route_raw[1]) > 1) ? substr($route_raw[1], 0, 2) : self::DEF;
-                        if(!isset(self::$_routes[$index]))
-                            self::$_routes[$index] = array();
-                        self::$_routes[$index][] = $route_raw;
-                    }
+                    if(sizeof($route_raw)===3)
+                        self::addRoute($route_raw[0], $route_raw[1], $route_raw[2]);
                 }
             }
         }
 
+        /**
+         * Dynamic add route in memory
+         * @param string $method Request method
+         * @param string $path Route path
+         * @param string $controller Route destination controller and action
+         */
+        protected static function addRoute($method, $path, $controller){
+            $index = (strlen($path) > 1 && $path[1] != "(" && $path[1] != "[") ? substr($path, 0, 2) : self::DEF;
+            if(!isset(self::$_routes[$index]))
+                self::$_routes[$index] = array();
+            if(strtolower($method) == "any")
+                $method = "*";
+            self::$_routes[$index][] = array($method, $path, $controller);
+        }
+
+        /**
+         * Generate route file (and restore it into memory)
+         */
         protected static function generate(){
+            $routes = "";
+
             foreach((array)glob(APP_PATH."/controllers/*.php") as $controller){
-                print_r(functionComments::parseFile($controller));
+                $ctrl = explode(".", $controller);
+                $ctrl = $ctrl[0];
+                $ctrl = explode("/", $ctrl);
+                $ctrl = $ctrl[sizeof($ctrl)-1];
+                $function_attrs = attributes::Parse($controller);
+                $routes .= string::format("# Controller {0}\r\n", $ctrl);
+                foreach((array)$function_attrs as $func => $attributes){
+                    if(!isset($attributes["route"])) continue;
+                    $method = self::ANY;
+                    $route = $attributes["route"];
+
+                    if(isset($attributes["method"]))
+                        $method = strtoupper($attributes["method"]);
+
+                    $routes .= $method;
+                    $routes .= string::format(" {0} {1}.{2}\r\n", $attributes["route"], $ctrl, $func);
+                    self::addRoute($method, $route, $ctrl.".".$func);
+
+                }
+                $routes .= "\r\n";
             }
-            exit;
+            file_put_contents(APP_ROUTES, trim($routes));
         }
 
         /**

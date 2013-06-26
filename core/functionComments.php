@@ -22,7 +22,7 @@
                     $nt = false;
                 }
 
-                if($funcs == 1 and $comms == 1){
+                if($funcs >= 1 and $comms >= 1){
                     $funcs = 0; $comms = 0;
                     $functions[$func] = $comm;
                 }

@@ -1,4 +1,9 @@
+# Controller application
 GET / application.index
-
-# Hello World!
+GET / application.index3
 * /id([0-9]+) application.profile
+* /login application.login
+
+# Controller application2
+ANY /helloworld application2.index
+ANY /([a-zA-Z0-9]+)_dword application2.dword

@@ -9,7 +9,6 @@ Abstract Class ExceptionHandler {
         $ErrorTitle = htmlspecialchars($ErrorTitle);
         $ErrorTitle = explode("\\", $ErrorTitle);
         $ErrorTitle = $ErrorTitle[sizeof($ErrorTitle)-1];
-        $ErrorDescription = $ErrorDescription;
         $ErrorFile = htmlspecialchars($ErrorFile);
         $ErrorLine = htmlspecialchars($ErrorLine);
         /*ForEach($ErrorLines as $errLn => $ErrorCode)
@@ -226,6 +225,7 @@ Abstract Class ExceptionHandler {
             <div>
                 <?
                 $ecline = 1;
+                $trace = "";
                 ForEach ($ErrorBackTrace as $entry) 
                 {
                     IF(isset($entry['class']))

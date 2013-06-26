@@ -44,9 +44,4 @@
     session_start();
 
     router::initialize();
-
-    $dt = microtime(1);
-    //for($i=0;$i<50000;$i++)
-        router::proceed();
-    $dt = microtime(1)-$dt;
-    die($dt);
+    router::proceed();

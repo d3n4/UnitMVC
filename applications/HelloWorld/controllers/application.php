@@ -3,9 +3,22 @@
 
         /**
          * @route /
+         * @method GET
          */
         public static function index(){
+            print("hello world");
+        }
 
+        public static function index2(){
+            print("hello world");
+        }
+
+        /**
+         * @route /
+         * @method GET
+         */
+        public static function index3(){
+            print("hello world");
         }
 
         /**

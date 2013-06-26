@@ -20,6 +20,16 @@
         protected static $_configs = array();
 
         /**
+         * Get instance of created config object
+         * @param string $alias name of config alias
+         * @return config|null config
+         */
+        public static function Get($alias)
+        {
+            return isset(self::$_configs[$alias]) ? self::$_configs[$alias] : null;
+        }
+
+        /**
          * Construct new configuration file
          * @param string $file filename
          * @param string $name alias name
