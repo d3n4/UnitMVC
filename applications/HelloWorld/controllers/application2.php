@@ -6,14 +6,16 @@
          * @method ANY
          */
         public static function index(){
-            print("Hello world");
+            echo "Hello world ;)";
         }
 
         /**
          * @route /([a-zA-Z0-9]+)_dword
+         * @validate string $word
+         * @Match $word ([0-9]+)
          * @method ANY
          */
-        public static function dword($word){
-            print("Hello ".$word);
+        public static function dword($word, $somethink){
+            return new view("main.html");
         }
     }

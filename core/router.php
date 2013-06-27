@@ -12,8 +12,7 @@
          * Initialize router
          */
         public static function initialize(){
-            $conf = Config::Get("config.ini");
-            if($conf->read("router", "auto", 1) == 1)
+            if(Config::Get("config.ini")->read("base", "attributes", 0) == 1)
                 self::generate();
             else if(file_exists(APP_ROUTES)){
                 $routes = file_get_contents(APP_ROUTES);
@@ -35,7 +34,7 @@
          * @param string $controller Route destination controller and action
          */
         protected static function addRoute($method, $path, $controller){
-            $index = (strlen($path) > 1 && $path[1] != "(" && $path[1] != "[") ? substr($path, 0, 2) : self::DEF;
+            $index = self::DEF;//(strlen($path) > 1 && $path[1] != "(" && $path[1] != "[") ? substr($path, 0, 2) : self::DEF;
             if(!isset(self::$_routes[$index]))
                 self::$_routes[$index] = array();
             if(strtolower($method) == "any")
@@ -49,12 +48,12 @@
         protected static function generate(){
             $routes = "";
 
-            foreach((array)glob(APP_PATH."/controllers/*.php") as $controller){
+            foreach((array)glob(APP_CONTROLLERS."/*.php") as $controller){
                 $ctrl = explode(".", $controller);
                 $ctrl = $ctrl[0];
                 $ctrl = explode("/", $ctrl);
                 $ctrl = $ctrl[sizeof($ctrl)-1];
-                $function_attrs = attributes::Parse($controller);
+                $function_attrs = attribute::parse($controller, $ctrl);
                 $routes .= string::format("# Controller {0}\r\n", $ctrl);
                 foreach((array)$function_attrs as $func => $attributes){
                     if(!isset($attributes["route"])) continue;
@@ -101,7 +100,7 @@
                     throw new exceptions\InvalidControllerReferenceException("Invalid controller reference in routes file \"".$controller_action_raw."\"");
                 list($controller, $action) = $controller_action;
 
-                $controller_file = APP_PATH."/controllers/".$controller.".php";
+                $controller_file = APP_CONTROLLERS."/".$controller.".php";
                 if(!file_exists($controller_file))
                     throw new exceptions\InvalidControllerException("Invalid controller file \"".$controller_file."\"");
 
@@ -126,8 +125,13 @@
                 for($argId = 1; $argId < sizeof($arguments_match); $argId++)
                     if(isset($arguments_match[$argId][0]))
                         $arguments[] = $arguments_match[$argId][0];
-
-                call_user_func_array($callback, $arguments);
+                if(config::Get("config.ini")->read("base", "attributes", 0)){
+                    $params = $method_ref->getParameters();
+                    print_r($params); exit;
+                }
+                $result = call_user_func_array($callback, $arguments);
+                if($result instanceof IActionResult)
+                    $result->render();
                 return true;
             }
             elseif(is_callable(self::$_notFoundCallback))
@@ -154,11 +158,11 @@
         protected static function findEx($uri, $method = self::DEF){
             $_uri = '[/'.$uri.'/]';
             $index = self::DEF;
-            if(strlen($uri) > 0){
+            /*if(strlen($uri) > 0){
                 $index = '/'.substr($uri, 0, 1);
                 if(!isset(self::$_routes[$index]))
                     $index = self::DEF;
-            }
+            }*/
             foreach((array) self::$_routes[$index] As $route)
                 if( $route[0] == $method || $route[0] == self::ANY ){
                     $arguments = array();

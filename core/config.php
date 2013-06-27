@@ -34,7 +34,7 @@
          * @param string $file filename
          * @param string $name alias name
          */
-        public function Config($file, $name = null){
+        public function config($file, $name = null){
             $this->_file = $file;
             $this->load();
             if($name == null)
