@@ -1,7 +1,7 @@
 # Controller application
 GET / application.index
 GET / application.index3
-* /id([0-9]+) application.profile
+POST /id([0-9]+) application.profile
 * /login application.login
 
 # Controller application2

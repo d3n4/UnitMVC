@@ -19,7 +19,7 @@
                 $memory[trim($func)] = array();
                 foreach((array)$matches as $match)
                     if(isset($match[1]))
-                        $memory[$func][strtolower(trim($match[1]))] = isset($match[2]) ? trim($match[2]) : null;
+                        $memory[$func][trim($match[1])] = isset($match[2]) ? trim($match[2]) : null;
                 if($ctrl != null){
                     if(!isset(self::$attributes[$ctrl]))
                         self::$attributes[$ctrl] = array();

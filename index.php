@@ -46,6 +46,8 @@
     define ("APP_MODELS", APP_PATH."/models");
     define ("APP_VIEWS", APP_PATH."/views");
     define ("APP_ASSETS", APP_PATH."/assets");
+    define ("APP_ATTRIBUTES", APP_PATH."/attributes");
+
     define ("HOME", $conf->read("base", "home", "/"));
 
     if(isset($_GET["asset"])){
@@ -56,6 +58,8 @@
     } elseif(isset($_GET["uri"])) {
         $indexes[] = APP_CONTROLLERS;
         $indexes[] = APP_MODELS;
+        if($conf->read("base", "attributes", 0))
+            $indexes[] = APP_ATTRIBUTES;
         foreach((array)glob(_CORE_."/extensions/*") as $ext)
             if(is_dir($ext))
                 $indexes[] = $ext;

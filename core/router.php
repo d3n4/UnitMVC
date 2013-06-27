@@ -56,15 +56,15 @@
                 $function_attrs = attribute::parse($controller, $ctrl);
                 $routes .= string::format("# Controller {0}\r\n", $ctrl);
                 foreach((array)$function_attrs as $func => $attributes){
-                    if(!isset($attributes["route"])) continue;
+                    if(!isset($attributes["Route"])) continue;
                     $method = self::ANY;
-                    $route = $attributes["route"];
+                    $route = $attributes["Route"];
 
-                    if(isset($attributes["method"]))
-                        $method = strtoupper($attributes["method"]);
+                    if(isset($attributes["Method"]))
+                        $method = strtoupper($attributes["Method"]);
 
                     $routes .= $method;
-                    $routes .= string::format(" {0} {1}.{2}\r\n", $attributes["route"], $ctrl, $func);
+                    $routes .= string::format(" {0} {1}.{2}\r\n", $attributes["Route"], $ctrl, $func);
                     self::addRoute($method, $route, $ctrl.".".$func);
 
                 }
@@ -125,13 +125,44 @@
                 for($argId = 1; $argId < sizeof($arguments_match); $argId++)
                     if(isset($arguments_match[$argId][0]))
                         $arguments[] = $arguments_match[$argId][0];
+
+                $proceed = true;
+
                 if(config::Get("config.ini")->read("base", "attributes", 0)){
-                    $params = $method_ref->getParameters();
-                    print_r($params); exit;
+                    $attributes = attribute::get($controller, $action);
+                    if($attributes != null){
+                        $params = $method_ref->getParameters();
+                        foreach((array)$attributes as $attr => $attr_params){
+                            $attr_file = APP_ATTRIBUTES."/".$attr.".php";
+                            if(file_exists($attr_file)){
+                                require_once $attr_file;
+                                $attr_ref = new ReflectionClass($attr);
+                                if($attr_ref->isSubclassOf("IAttribute")){
+                                    $ctrl_data = array(
+                                        "controller" => $controller,
+                                        "action" => $action,
+                                        "controller_ref" => $class_ref,
+                                        "action_ref" => $method_ref
+                                    );
+                                    $attr_binder = array($attr, "bind");
+                                    call_user_func_array($attr_binder, array(
+                                        $ctrl_data,
+                                        $attr_params,
+                                        &$arguments,
+                                        &$proceed
+                                    ));
+                                }
+                            }
+                        }
+                    }
                 }
-                $result = call_user_func_array($callback, $arguments);
-                if($result instanceof IActionResult)
-                    $result->render();
+
+                if($proceed){
+                    $result = call_user_func_array($callback, $arguments);
+                    if($result instanceof IActionResult)
+                        $result->render();
+                }
+
                 return true;
             }
             elseif(is_callable(self::$_notFoundCallback))

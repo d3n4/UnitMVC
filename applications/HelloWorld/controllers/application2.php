@@ -2,20 +2,20 @@
     abstract class application2 {
 
         /**
-         * @route /helloworld
-         * @method ANY
+         * @Route /helloworld
+         * @Method ANY
          */
         public static function index(){
             echo "Hello world ;)";
         }
 
         /**
-         * @route /([a-zA-Z0-9]+)_dword
-         * @validate string $word
+         * @Route /([a-zA-Z0-9]+)_dword
+         * @Validate string $word
          * @Match $word ([0-9]+)
-         * @method ANY
+         * @Method ANY
          */
-        public static function dword($word, $somethink){
+        public static function dword($word){
             return new view("main.html");
         }
     }
