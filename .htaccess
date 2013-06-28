@@ -1,5 +1,5 @@
 AddDefaultCharset utf-8
 
 RewriteEngine on
-RewriteRule ^asset/(.*)$ index.php?asset=$1 [L,QSA]
+RewriteRule ^assets/(.*)$ index.php?asset=$1 [L,QSA]
 RewriteRule ^(.*)$ index.php?uri=$1 [L,QSA]

@@ -12,7 +12,7 @@
          * Initialize router
          */
         public static function initialize(){
-            if(Config::Get("config.ini")->read("base", "attributes", 0) == 1)
+            if(Config::Get("config.ini")->read("router", "auto", 0) == 1)
                 self::generate();
             else if(file_exists(APP_ROUTES)){
                 $routes = file_get_contents(APP_ROUTES);
@@ -49,22 +49,19 @@
             $routes = "";
 
             foreach((array)glob(APP_CONTROLLERS."/*.php") as $controller){
-                $ctrl = explode(".", $controller);
-                $ctrl = $ctrl[0];
-                $ctrl = explode("/", $ctrl);
-                $ctrl = $ctrl[sizeof($ctrl)-1];
+                $ctrl = basename($controller, ".php");
                 $function_attrs = attribute::parse($controller, $ctrl);
                 $routes .= string::format("# Controller {0}\r\n", $ctrl);
                 foreach((array)$function_attrs as $func => $attributes){
-                    if(!isset($attributes["Route"])) continue;
+                    if(!isset($attributes["route"])) continue;
                     $method = self::ANY;
-                    $route = $attributes["Route"];
+                    $route = $attributes["route"];
 
-                    if(isset($attributes["Method"]))
-                        $method = strtoupper($attributes["Method"]);
+                    if(isset($attributes["method"]))
+                        $method = strtoupper($attributes["method"]);
 
                     $routes .= $method;
-                    $routes .= string::format(" {0} {1}.{2}\r\n", $attributes["Route"], $ctrl, $func);
+                    $routes .= string::format(" {0} {1}.{2}\r\n", $attributes["route"], $ctrl, $func);
                     self::addRoute($method, $route, $ctrl.".".$func);
 
                 }
@@ -129,9 +126,10 @@
                 $proceed = true;
 
                 if(config::Get("config.ini")->read("base", "attributes", 0)){
+                    if(config::Get("config.ini")->read("router", "auto", 0) == 0)
+                        attribute::parse(APP_CONTROLLERS."/".$controller.".php", $controller);
                     $attributes = attribute::get($controller, $action);
                     if($attributes != null){
-                        $params = $method_ref->getParameters();
                         foreach((array)$attributes as $attr => $attr_params){
                             $attr_file = APP_ATTRIBUTES."/".$attr.".php";
                             if(file_exists($attr_file)){
@@ -139,10 +137,8 @@
                                 $attr_ref = new ReflectionClass($attr);
                                 if($attr_ref->isSubclassOf("IAttribute")){
                                     $ctrl_data = array(
-                                        "controller" => $controller,
-                                        "action" => $action,
-                                        "controller_ref" => $class_ref,
-                                        "action_ref" => $method_ref
+                                        "controller" => $class_ref,
+                                        "action" => $method_ref
                                     );
                                     $attr_binder = array($attr, "bind");
                                     call_user_func_array($attr_binder, array(
