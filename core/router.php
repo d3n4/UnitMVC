@@ -126,7 +126,7 @@
                 $proceed = true;
 
                 if(config::Get("config.ini")->read("base", "attributes", 0)){
-                    if(config::Get("config.ini")->read("router", "auto", 0) == 0)
+                    if(config::Get("config.ini")->read("router", "auto", 0) != 1)
                         attribute::parse(APP_CONTROLLERS."/".$controller.".php", $controller);
                     $attributes = attribute::get($controller, $action);
                     if($attributes != null){

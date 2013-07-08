@@ -48,7 +48,7 @@
     define ("APP_ASSETS", APP_PATH."/assets");
     define ("APP_ATTRIBUTES", APP_PATH."/attributes");
 
-    define ("HOME", $conf->read("base", "home", "/"));
+    define ("HOME", substr($_SERVER['REQUEST_URI'], 0, strlen($_SERVER['REQUEST_URI'])-1));
 
     if(isset($_GET["asset"])){
         if(!assets::get($_GET["asset"])){

@@ -1,9 +1,7 @@
 # Controller application
-GET / application.index
-GET / application.index3
 POST /id([0-9]+) application.profile
 * /login application.login
 
 # Controller application2
 ANY /helloworld application2.index
-ANY /([a-zA-Z0-9]+)_dword application2.dword
+ANY / application2.dword

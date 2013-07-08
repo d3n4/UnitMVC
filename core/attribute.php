@@ -1,8 +1,18 @@
 <?php
 
     class attribute {
+
+        /**
+         * Store list of all parsed attributes
+         * @var array attributes
+         */
         protected static $attributes = array();
 
+        /**
+         * @param string $class class name
+         * @param string $function function name
+         * @return null|array result
+         */
         public static function get($class, $function){
             if(isset(self::$attributes[$class]))
                 if(isset(self::$attributes[$class][$function]))
@@ -10,6 +20,11 @@
             return null;
         }
 
+        /**
+         * @param string $file controller file
+         * @param null|string $ctrl name of controller (class)
+         * @return array result
+         */
         public static function parse($file, $ctrl = null){
             $memory = array();
             $attributes = functionComments::parseFile($file);
