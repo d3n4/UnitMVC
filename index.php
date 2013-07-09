@@ -1,7 +1,7 @@
 <?php
     define ("_BASE_", str_replace("\\", "/", dirname(__FILE__)));
     define ("_CORE_", _BASE_."/core");
-
+	
     error_reporting(E_ALL);
     session_start();
 
