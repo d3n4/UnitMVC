@@ -47,10 +47,18 @@
     define ("APP_VIEWS", APP_PATH."/views");
     define ("APP_ASSETS", APP_PATH."/assets");
     define ("APP_ATTRIBUTES", APP_PATH."/attributes");
+    define ("APP_EXTENSIONS", APP_PATH."/extensions");
 
-    define ("HOME", substr($_SERVER['REQUEST_URI'], 0, strlen($_SERVER['REQUEST_URI'])-1));
+    $tmp = explode("/", $_SERVER['REQUEST_URI']);
+    unset($tmp[sizeof($tmp)-1]);
+    define ("URI", implode("/", $tmp));
+    $tmp = explode("/", $_SERVER["SCRIPT_NAME"]);
+    unset($tmp[sizeof($tmp)-1]);
+    define ("HOME", implode("/", $tmp));
 
     if(isset($_GET["asset"])){
+        assets::setVar("HOME", HOME);
+        assets::setVar("URI", URI);
         if(!assets::get($_GET["asset"])){
             header("HTTP/1.0 404 Not Found");
             exit;
@@ -60,7 +68,7 @@
         $indexes[] = APP_MODELS;
         if($conf->read("base", "attributes", 0))
             $indexes[] = APP_ATTRIBUTES;
-        foreach((array)glob(_CORE_."/extensions/*") as $ext)
+        foreach((array)glob(APP_EXTENSIONS."/*") as $ext)
             if(is_dir($ext))
                 $indexes[] = $ext;
 

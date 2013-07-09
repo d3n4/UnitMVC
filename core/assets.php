@@ -1,5 +1,21 @@
 <?php
     abstract class assets {
+        protected static $variables = array();
+
+        public static function setVar($key, $value){
+            self::$variables['{$'.trim($key).'}'] = $value;
+        }
+
+        public static function getVar($key){
+            if(isset(self::$variables['{$'.trim($key).'}']))
+                return self::$variables['{$'.trim($key).'}'];
+            return null;
+        }
+
+        protected static function process($context){
+            return str_replace(array_keys(self::$variables), array_values(self::$variables), $context);
+        }
+
         public static function get_mime_type($file){
             $mime_types = array(
                 '123' => 'application/vnd.lotus-1-2-3',
@@ -994,18 +1010,26 @@
             return 'application/octet-stream';
     }
 
-    public static function get($asset){
-        return self::rawGet(APP_ASSETS.'/'.$asset);
-    }
-
-    public static function rawGet($file){
-        if(file_exists($file) && is_file($file)){
-            $type = self::get_mime_type($file);
-            header('Content-type: '.$type);
-            // readfile($file);
-            echo str_replace('{$HOME}', HOME, file_get_contents($file));
-            exit;
+        public static function get($asset){
+            return self::rawGet(APP_ASSETS.'/'.$asset);
         }
-        return false;
+
+        public static function rawGet($file){
+            if(file_exists($file) && is_file($file)){
+                $type = self::get_mime_type($file);
+                header('Content-type: '.$type);
+                $ext = explode(".", $file);
+                $ext = $ext[sizeof($ext)-1];
+                switch(strtolower(trim($ext))){
+                    case "css":
+                    case "js":
+                        echo self::process(file_get_contents($file));
+                        break;
+                    default:
+                        readfile($file);
+                }
+                exit;
+            }
+            return false;
+        }
     }
-}

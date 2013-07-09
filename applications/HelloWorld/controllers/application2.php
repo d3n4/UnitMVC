@@ -1,4 +1,5 @@
 <?php
+    require_once "class-Clockwork.php";
     abstract class application2 {
 
         /**
@@ -12,11 +13,10 @@
         /**
          * @Route /
          * @Validate string $word
-         * @Match $word
          * @Method ANY
          */
         public static function dword(){
-            $m = new MySQL("hardlook");
+            /*$m = new MySQL("hardlook");
             $m->connect();
             $q = $m->query("SELECT * FROM users ORDER by ID DESC");
             while ($row = $q->fetch_assoc()) {
