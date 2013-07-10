@@ -158,13 +158,15 @@
                     if($result instanceof IActionResult)
                         $result->render();
                 }
-
+                if(defined("DEBUG")) $GLOBALS["_UNIT"]["ENGINE"]["BOOT"] = microtime(1) - $GLOBALS["_performance_mts"];
                 return true;
             }
             elseif(is_callable(self::$_notFoundCallback))
                 return call_user_func(self::$_notFoundCallback, $uri);
             else
                 throw new exceptions\RouteNotFoundException("Route for url \"/".htmlspecialchars($uri)."\" not found");
+
+
         }
 
         /**

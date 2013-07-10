@@ -15,6 +15,8 @@
          * @Method ANY
          */
         public static function dword(){
+            global $_UNIT;
+            print_r($_UNIT);
             return new view("main.html");
         }
     }

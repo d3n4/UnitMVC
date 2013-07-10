@@ -8,10 +8,13 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
-    <link href="{{ HOME }}/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="{{ HOME }}/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="{{ HOME }}/assets/styles/bootstrap.css" rel="stylesheet">
+    <link href="{{ HOME }}/assets/styles/bootstrap-responsive.css" rel="stylesheet">
 
-    <link href="{{ HOME }}/assets/css/common.css" rel="stylesheet">
+    <link href="{{ HOME }}/assets/styles/common.css" rel="stylesheet">
+
+    <link href="{{ HOME }}/assets/prettify/bootstrap.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="{{ HOME }}/assets/prettify/prettify.js"></script>
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -26,7 +29,7 @@
     <link rel="shortcut icon" href="{{ HOME }}/assets/ico/favicon.png">
 </head>
 
-<body>
+<body onload="prettyPrint()">
 
 <div class="container">
 
@@ -54,6 +57,41 @@
         <p class="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
         <a class="btn btn-large btn-success" href="#">Get started today</a>
     </div>
+
+    <ul class="breadcrumb">
+        <li>xampp <span class="divider">/</span></li>
+        <li>htdocs <span class="divider">/</span></li>
+        <li>UnitMVC <span class="divider">/</span></li>
+        <li class="active">test.php:4</li>
+    </ul>
+
+    <div class="alert alert-error">
+        CAUGHT EXCEPTION <b>FileNotFoundException</b>
+    </div>
+
+    <pre id="pcode" class="prettyprint linenums">
+&lt;?php
+    abstract class users_controller extends controller {
+        protected $_mem = array();
+        public function _pull($doc = "nothing"){
+            return self::PULL(MASTER);
+        }
+    }
+?&gt;</pre>
+    <style>#pcode .L3 { background-color: rgb(255, 226, 226); text-shadow: 0 1px 0 rgba(0,0,0,0.1); }</style>
+    <pre class="prettyprint linenums">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Bootstrap 101 Template&lt;/title&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello, world!&lt;/h1&gt;
+    &lt;script src="http://code.jquery.com/jquery.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
 
     <hr>
 
@@ -84,7 +122,7 @@
 
 </div> <!-- /container -->
 
-<script src="{{ HOME }}/assets/js/jquery.js"></script>
+<script src="{{ HOME }}/assets/scripts/jquery.js"></script>
 
 </body>
 </html>

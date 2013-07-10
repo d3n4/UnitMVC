@@ -1,45 +1,61 @@
 <?php
+    define("DEBUG", 0);
+
+    if(defined("DEBUG")) $_performance_mts = microtime(1);
+
     define ("_BASE_", str_replace("\\", "/", dirname(__FILE__)));
     define ("_CORE_", _BASE_."/core");
 	
     error_reporting(E_ALL);
     session_start();
 
-    $indexes = array();
-    spl_autoload_register(function($class) use (&$indexes){
+    $_UNIT = array(
+        "ENGINE" => array(
+            "SCRIPTS" => array(),
+            "INDEX" => array(),
+            "ELAPSED" => 0,
+            "BOOT" => 0
+        ),
+    );
+
+    spl_autoload_register(function($class) use (&$_UNIT){
         $path = '/'.str_replace("\\","/", $class).".php";
 
-        if(is_file($file = _CORE_.'/'.str_replace(array('_', "\0"), array('/', ''), $class).'.php')){
-            require_once $file;
-            return;
-        }
+        $script = null;
 
         if(file_exists(_CORE_.$path))
-        {
-            require_once _CORE_.$path;
-            return;
-        }
+            $script = _CORE_.$path;
         elseif(file_exists(_BASE_.$path))
-        {
-            require_once _BASE_.$path;
-            return;
-        }
-
-        foreach((array)$indexes as $index){
+            $script = _BASE_.$path;
+        elseif(is_file($file = _CORE_.'/'.str_replace(array('_', "\0"), array('/', ''), $class).'.php'))
+            $script = $file;
+        else foreach((array)$_UNIT["ENGINE"]["INDEX"] as $index){
             $fHandle = $index."/".$class.".php";
             if(file_exists($fHandle))
             {
-                require_once $fHandle;
-                return;
+                $script = $fHandle;
+                break;
             }
         }
 
-        ExceptionHandler::SimulateException(new \exceptions\ClassNotFoundException("Class ".$class." not found"));
+        if($script !== null){
+            if(defined("DEBUG")){
+                $start = microtime(1);
+                require_once $script;
+                $elapsed = microtime(1)-$start;
+                $_UNIT["ENGINE"]["SCRIPTS"][] = array(
+                    "file" => $script,
+                    "size" => filesize($script),
+                    "time" => $elapsed
+                );
+                $_UNIT["ENGINE"]["ELAPSED"] += $elapsed;
+            } else require_once $script;
+        } else ExceptionHandler::SimulateException(new \exceptions\ClassNotFoundException("Class ".$class." not found"));
     });
+    
+    $_UNIT["CONFIG"] = new Config("config.ini");
 
-    $conf = new Config("config.ini");
-
-    define ("APP_NAME", $conf->read('app', 'name'));
+    define ("APP_NAME", $_UNIT["CONFIG"]->read('app', 'name'));
     define ("APP_PATH", _BASE_."/applications/".APP_NAME);
     define ("APP_ROUTES", APP_PATH."/routes");
     define ("APP_CONTROLLERS", APP_PATH."/controllers");
@@ -64,21 +80,23 @@
             exit;
         }
     } elseif(isset($_GET["uri"])) {
-        $indexes[] = APP_CONTROLLERS;
-        $indexes[] = APP_MODELS;
-        if($conf->read("base", "attributes", 0))
-            $indexes[] = APP_ATTRIBUTES;
+        $_UNIT["ENGINE"]["INDEX"][] = APP_CONTROLLERS;
+        $_UNIT["ENGINE"]["INDEX"][] = APP_MODELS;
+        if($_UNIT["CONFIG"]->read("base", "attributes", 0))
+            $_UNIT["ENGINE"]["INDEX"][] = APP_ATTRIBUTES;
         foreach((array)glob(APP_EXTENSIONS."/*") as $ext)
             if(is_dir($ext))
-                $indexes[] = $ext;
+                $_UNIT["ENGINE"]["INDEX"][] = $ext;
 
-        if($conf->read('debug', 'display', 1))
+        if($_UNIT["CONFIG"]->read('debug', 'display', 1))
             ExceptionHandler::Initialize();
 
-        ini_set('display_errors', $conf->read('debug', 'display_errors', 1));
-        ini_set('display_startup_errors', $conf->read('debug', 'display_errors', 1));
-        set_time_limit($conf->read('debug', 'timeout', 0));
-
+        ini_set('display_errors', $_UNIT["CONFIG"]->read('debug', 'display_errors', 1));
+        ini_set('display_startup_errors', $_UNIT["CONFIG"]->read('debug', 'display_errors', 1));
+        set_time_limit($_UNIT["CONFIG"]->read('debug', 'timeout', 0));
         router::initialize();
+
         router::proceed();
+
+        print_r($_UNIT);
     }

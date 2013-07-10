@@ -1,8 +1,5 @@
 <?php
     abstract class application {
-
-
-
         /**
          * 2
          * @Route /id([0-9]+)
