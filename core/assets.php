@@ -1020,15 +1020,16 @@
                 header('Content-type: '.$type);
                 $ext = explode(".", $file);
                 $ext = $ext[sizeof($ext)-1];
-                switch(strtolower(trim($ext))){
-                    case "css":
-                    case "js":
+                if(unit_conf()->read("assets", "processor", false)){
+                    $process = explode(",", strtolower(str_replace(" ", "", unit_conf()->read("assets", "process", ""))));
+                    if(in_array($ext, $process)){
                         echo self::process(file_get_contents($file));
-                        break;
-                    default:
+                    } else {
                         readfile($file);
+                    }
+                    exit;
                 }
-                exit;
+
             }
             return false;
         }

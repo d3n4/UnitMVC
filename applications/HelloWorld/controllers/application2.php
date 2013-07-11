@@ -15,8 +15,8 @@
          * @Method ANY
          */
         public static function dword(){
-            global $_UNIT;
-            print_r($_UNIT);
+            //debug::render();
+            file_get_contents("test");
             return new view("main.html");
         }
     }

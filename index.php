@@ -1,7 +1,10 @@
 <?php
     define("DEBUG", 0);
 
-    if(defined("DEBUG")) $_performance_mts = microtime(1);
+    if(defined("DEBUG")){
+        $_performance_mts = microtime(1);
+        $_performance_mem = memory_get_usage();
+    }
 
     define ("_BASE_", str_replace("\\", "/", dirname(__FILE__)));
     define ("_CORE_", _BASE_."/core");
@@ -18,7 +21,7 @@
         ),
     );
 
-    spl_autoload_register(function($class) use (&$_UNIT){
+    spl_autoload_register(function($class) use (&$_UNIT, &$_performance_mem){
         $path = '/'.str_replace("\\","/", $class).".php";
 
         $script = null;
@@ -43,9 +46,11 @@
                 $start = microtime(1);
                 require_once $script;
                 $elapsed = microtime(1)-$start;
+                $_performance_mem = memory_get_usage()-$_performance_mem;
                 $_UNIT["ENGINE"]["SCRIPTS"][] = array(
                     "file" => $script,
                     "size" => filesize($script),
+                    "memory" => $_performance_mem,
                     "time" => $elapsed
                 );
                 $_UNIT["ENGINE"]["ELAPSED"] += $elapsed;
@@ -54,6 +59,8 @@
     });
     
     $_UNIT["CONFIG"] = new Config("config.ini");
+
+    function unit_conf(){ return $GLOBALS["_UNIT"]["CONFIG"]; }
 
     define ("APP_NAME", $_UNIT["CONFIG"]->read('app', 'name'));
     define ("APP_PATH", _BASE_."/applications/".APP_NAME);
@@ -95,8 +102,6 @@
         ini_set('display_startup_errors', $_UNIT["CONFIG"]->read('debug', 'display_errors', 1));
         set_time_limit($_UNIT["CONFIG"]->read('debug', 'timeout', 0));
         router::initialize();
-
         router::proceed();
-
-        print_r($_UNIT);
+        print_r( $GLOBALS["_UNIT"] );
     }
