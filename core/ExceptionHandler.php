@@ -185,7 +185,7 @@ Abstract Class ExceptionHandler {
     </head>
 
     <body>
-        <h1><?=$ErrorTitle?> <a class="IgnoreApb" href="?ignore=1">Ignore</a></h1>
+        <h1><?=join(" ", string::splitUpperWords($ErrorTitle))?> <a class="IgnoreApb" href="?ignore=1">Ignore</a></h1>
         <p id="detail">
             <?=$ErrorDescription?>
         </p>

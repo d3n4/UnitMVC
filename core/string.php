@@ -96,6 +96,15 @@
                 $input = str_replace ('{'.($i-1).'}', func_get_arg($i), $input);
             return $input;
         }
+		
+		/**
+		 * Split every upper case characters
+		 * @param string $input
+		 * @return array result
+		 */
+		 public static function splitUpperWords($input){
+			return preg_split('/(?=[A-Z])/', $input, -1, PREG_SPLIT_NO_EMPTY);
+		 }
 
         public static function check($pattern, $subject){
             $matches = null;

@@ -12,11 +12,11 @@
         /**
          * @Route /
          * @Validate string $word
-         * @Method ANY
+         * @Method GET
          */
         public static function dword(){
-            //debug::render();
-            file_get_contents("test");
-            return new view("main.html");
+            $view = new view("main.twig");
+            $view->set("");
+            return $view;
         }
     }

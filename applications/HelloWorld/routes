@@ -4,4 +4,4 @@ POST /id([0-9]+) application.profile
 
 # Controller application2
 ANY /helloworld application2.index
-ANY / application2.dword
+GET / application2.dword
