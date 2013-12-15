@@ -1,0 +1,2 @@
+* / application.main
+* /set/([a-zA-Z0-9]+) application.set
