@@ -28,7 +28,8 @@
             if($cache === true)
                 $this->options["cache"] = APP_CACHE . "/views";
             $this->twig = new Twig_Environment($this->loader, $this->options);
-            $this->twig->addFilter(new Twig_SimpleFilter('lang', array("lang", "get")));
+            $this->twig->addFilter(new Twig_SimpleFilter('lang', array("localization", "get")));
+            $this->twig->addFilter(new Twig_SimpleFilter('asset', array("crud", "getAssetPath")));
             $this->tpl = $this->twig->loadTemplate($name);
         }
 

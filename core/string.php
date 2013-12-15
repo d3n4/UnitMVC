@@ -92,8 +92,21 @@
          * @return string format result
          */
         public static function format($input){
-            For($i = 1; $i < sizeof(func_get_args()); $i++)
+            for($i = 1; $i < sizeof(func_get_args()); $i++)
                 $input = str_replace ('{'.($i-1).'}', func_get_arg($i), $input);
+            return $input;
+        }
+
+
+        /**
+         * Format text with some argument pre-processor
+         * @param string $input format string
+         * @param callable $processor processor callable (function)
+         * @return string format result
+         */
+        public static function process_format($processor, $input){
+            for($i = 2; $i < sizeof(func_get_args()); $i++)
+                $input = str_replace ('{'.($i-2).'}', call_user_func($processor, func_get_arg($i)), $input);
             return $input;
         }
 		
@@ -103,7 +116,7 @@
 		 * @return array result
 		 */
 		 public static function splitUpperWords($input){
-			return preg_split('/(?=[A-Z])/', $input, -1, PREG_SPLIT_NO_EMPTY);
+			return preg_split('/(?=[A-Z][a-z])/', $input, -1, PREG_SPLIT_NO_EMPTY);
 		 }
 
         public static function check($pattern, $subject){

@@ -1,7 +1,0 @@
-# Controller application
-POST /id([0-9]+) application.profile
-* /login application.login
-
-# Controller application2
-ANY /helloworld application2.index
-GET / application2.dword

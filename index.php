@@ -60,7 +60,12 @@
     
     $_UNIT["CONFIG"] = new Config("config.ini");
 
+    if(($ping = $_UNIT["CONFIG"]->read("network", "ping", 0)) > 0)
+        usleep($ping*1000);
+
     function unit_conf(){ return $GLOBALS["_UNIT"]["CONFIG"]; }
+
+    function index($index) { global $_UNIT; $_UNIT["ENGINE"]["INDEX"][] = $index; }
 
     define ("APP_NAME", $_UNIT["CONFIG"]->read('app', 'name'));
     define ("APP_PATH", _BASE_."/applications/".APP_NAME);
@@ -90,7 +95,7 @@
         }
     } elseif(isset($_GET["uri"])) {
         if(!file_exists(APP_CACHE))
-            mkdir(APP_CACHE);
+            @mkdir(APP_CACHE);
         $_UNIT["ENGINE"]["INDEX"][] = APP_CONTROLLERS;
         $_UNIT["ENGINE"]["INDEX"][] = APP_MODELS;
         if($_UNIT["CONFIG"]->read("base", "attributes", 0))
@@ -102,11 +107,14 @@
         if($_UNIT["CONFIG"]->read('debug', 'display', 1))
             ExceptionHandler::Initialize();
 
+        if(!file_exists(APP_PATH))
+            throw new \exceptions\ApplicationNotFound("Application ".APP_NAME." not found");
+
         ini_set('display_errors', $_UNIT["CONFIG"]->read('debug', 'display_errors', 1));
         ini_set('display_startup_errors', $_UNIT["CONFIG"]->read('debug', 'display_errors', 1));
         set_time_limit($_UNIT["CONFIG"]->read('debug', 'timeout', 0));
 
-        lang::set($_UNIT["CONFIG"]->read("localization", "locale", "en-US"));
+        localization::set($_UNIT["CONFIG"]->read("localization", "locale", "en-US"));
 
         router::initialize();
         router::proceed();

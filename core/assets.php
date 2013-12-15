@@ -1027,8 +1027,8 @@
                     } else {
                         readfile($file);
                     }
-                    exit;
-                }
+                } else readfile($file);
+                exit;
 
             }
             return false;

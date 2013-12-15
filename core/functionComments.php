@@ -2,10 +2,10 @@
 
     abstract class functionComments {
         protected $_tokens;
-        public static function parseFile($file){
-            return self::parse(file_get_contents($file));
+        public static function parseFile($file, $functions = true){
+            return self::parse(file_get_contents($file), $functions);
         }
-        public static function parse($content){
+        public static function parse($content, $functions = true){
             $tokens = token_get_all($content);
             $functions = array();
             $nt = false; $comm = ""; $func = ""; $funcs = 0; $comms = 0;
@@ -19,6 +19,11 @@
                 if($token[0] === T_FUNCTION && $nt){
                     $funcs++;
                     $func = $tokens[$i+2][1];
+                    $nt = false;
+                } elseif($token[0] === T_VARIABLE && $nt){
+                    $funcs++;
+                    $func = $tokens[$i][1];
+                    $func = substr($func,1);
                     $nt = false;
                 }
 
