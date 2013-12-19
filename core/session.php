@@ -59,12 +59,12 @@
          * @return null|session
          */
         public static function pull() {
-            if(crud::isset_all($_SESSION, array(self::LOGIN_KEYWORD, self::SESSION_KEYWORD))) {
-                $login = $_SESSION[self::LOGIN_KEYWORD];
-                $session = $_SESSION[self::SESSION_KEYWORD];
-                $session_model = self::selectOne(_and( eq("login", $login), eq("session", $session) ));
+            if(crud::isset_all($_COOKIE, array(self::LOGIN_KEYWORD, self::SESSION_KEYWORD))) {
+                $login = $_COOKIE[self::LOGIN_KEYWORD];
+                $session = $_COOKIE[self::SESSION_KEYWORD];
+                $session_model = self::selectOne(_and( eq("login", strtolower($login)), eq("session", $session) ));
                 if(!$session_model) {
-                    unset($_SESSION[self::LOGIN_KEYWORD], $_SESSION[self::SESSION_KEYWORD]);
+                    unset($_COOKIE[self::LOGIN_KEYWORD], $_COOKIE[self::SESSION_KEYWORD]);
                     return null;
                 }
                 return $session_model;
@@ -79,7 +79,7 @@
          */
         public static function push($login) {
             $session = new self();
-            $session->login = $login;
+            $session->login = strtolower($login);
             $session->time = time();
             $session->agent = $_SERVER['HTTP_USER_AGENT'];
             $session->ip = $_SERVER['REMOTE_ADDR'];
@@ -93,8 +93,8 @@
          * @param session $session
          */
         public static function bind(session $session) {
-            $_SESSION[self::LOGIN_KEYWORD] = $session->login;
-            $_SESSION[self::SESSION_KEYWORD] = $session->session;
+            setcookie(self::LOGIN_KEYWORD, strtolower($session->login), -1,  HOME );
+            setcookie(self::SESSION_KEYWORD, $session->session, -1, HOME);
         }
 
         /**
@@ -106,7 +106,7 @@
             return strtoupper(
                 md5(
                     sha1(
-                        $login . $_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR'] . self::SESSION_SALT
+                        strtolower($login) . $_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR'] . self::SESSION_SALT
                     )
                 )
             );

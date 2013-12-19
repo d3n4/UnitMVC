@@ -83,7 +83,14 @@
     define ("URI", implode("/", $tmp));
     $tmp = explode("/", $_SERVER["SCRIPT_NAME"]);
     unset($tmp[sizeof($tmp)-1]);
-    define ("HOME", implode("/", $tmp));
+    $tmp = implode("/", $tmp);
+    if(strlen($tmp) > 0) {
+        if($tmp[0] != "/") $tmp = "/".$tmp;
+    } else {
+        $tmp = "/";
+    }
+    define ("HOME", $tmp);
+
 
     if(isset($_GET["asset"])){
         assets::setVar("HOME", HOME);
