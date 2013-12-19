@@ -40,7 +40,6 @@
                 break;
             }
         }
-
         if($script !== null){
             if(defined("DEBUG")){
                 $start = microtime(1);
