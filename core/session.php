@@ -106,7 +106,10 @@
             return strtoupper(
                 md5(
                     sha1(
-                        strtolower($login) . $_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR'] . self::SESSION_SALT
+                        strtolower($login).
+                        $_SERVER['HTTP_USER_AGENT'].
+                        $_SERVER['REMOTE_ADDR'].
+                        self::SESSION_SALT
                     )
                 )
             );

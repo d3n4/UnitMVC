@@ -1,5 +1,6 @@
 # Controller application
 * / application.main
+* /gateway application.gateway
 * /bind/([a-zA-Z0-9_]+) application.bind
 
 # Controller generator

@@ -11,11 +11,10 @@
          * @param bool $override Override value, if key already exists
          */
         public static function write($key, $value = 1, $override = true) {
-            if(isset($_SESSION[$key]) && $override) {
-                $_SESSION[$key] = $value;
-            } elseif(!isset($_SESSION[$key])) {
-                $_SESSION[$key] = $value;
-            }
+            if(isset($_SESSION[$key]) && $override)
+	            $_SESSION[$key] = $value;
+            elseif(!isset($_SESSION[$key]))
+	            $_SESSION[$key] = $value;
         }
 
         /**

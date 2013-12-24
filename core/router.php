@@ -106,7 +106,15 @@ abstract class router {
             if(!class_exists($controller))
                 throw new exceptions\InvalidControllerException("Invalid controller \"".$controller."\" controller not implemented");
 
+	        $break = null;
+	        $arguments = array();
+
+	        $precalle = $controller."::action";
+	        if(is_callable($precalle))
+		        $break = call_user_func_array($precalle, array(&$action, &$arguments));
+
             $callback = $controller."::".$action;
+	        $controller_action_raw = $controller.".".$action;
 
             if(!is_callable($callback))
                 throw new exceptions\InvalidControllerActionException("Invalid controller action \"".$controller_action_raw."\" action not implemented");
@@ -116,12 +124,13 @@ abstract class router {
             if(!$method_ref->isStatic())
                 throw new exceptions\InvalidControllerActionException("Invalid action method type \"".$controller_action_raw."\" must be Static");
 
-            $arguments_match = array();
-            preg_match_all('|\['.$uri_mask.'/\]|Uis', '[/'.$uri.'/]', $arguments_match);
-            $arguments = array();
-            for($argId = 1; $argId < sizeof($arguments_match); $argId++)
-                if(isset($arguments_match[$argId][0]))
-                    $arguments[] = $arguments_match[$argId][0];
+	        if(is_array($arguments) && sizeof($arguments) == 0) {
+	            $arguments_match = array();
+	            preg_match_all('|\['.$uri_mask.'/\]|Uis', '[/'.$uri.'/]', $arguments_match);
+	            for($argId = 1; $argId < sizeof($arguments_match); $argId++)
+	                if(isset($arguments_match[$argId][0]))
+	                    $arguments[] = $arguments_match[$argId][0];
+	        }
 
             $proceed = true;
 
@@ -154,7 +163,9 @@ abstract class router {
             }
 
             if($proceed){
-                $result = call_user_func_array($callback, $arguments);
+			    $result = "";
+	            if($break !== false)
+                    $result = call_user_func_array($callback, $arguments);
                 if($result instanceof IActionResult)
                     $result->render();
                 elseif(is_string($result))

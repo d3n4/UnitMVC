@@ -80,15 +80,13 @@
 
     $tmp = explode("/", $_SERVER['REQUEST_URI']);
     unset($tmp[sizeof($tmp)-1]);
-    define ("URI", implode("/", $tmp));
+    $tmp = implode("/", $tmp);
+	if(strlen($tmp) > 0) $tmp = $tmp[0] != "/" ? "/".$tmp : $tmp; else $tmp = "/";
+    define ("URI", $tmp);
     $tmp = explode("/", $_SERVER["SCRIPT_NAME"]);
     unset($tmp[sizeof($tmp)-1]);
     $tmp = implode("/", $tmp);
-    if(strlen($tmp) > 0) {
-        if($tmp[0] != "/") $tmp = "/".$tmp;
-    } else {
-        $tmp = "/";
-    }
+    if(strlen($tmp) > 0) $tmp = $tmp[0] != "/" ? "/".$tmp : $tmp; else $tmp = "/";
     define ("HOME", $tmp);
 
 
